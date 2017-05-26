@@ -26,8 +26,8 @@ li{list-style:none;}
 .content-reply-box li.odd .reply-time{text-align:left;}
 .content-reply-box li.even .reply-time{text-align:right;}
 .reply-content{border:1px solid #fcfcfc;padding:.6em;background-color:#fcfcfc;border-radius:4px;box-shadow:0 0 5px #ccc; margin:0 30px}
-.content-reply-box li.odd .arrow{width:0;height:0;line-height:0;font-size:0;border-color:transparent #fff transparent transparent;border-width:6px;border-style:dashed solid dashed dashed;display:block;position:absolute;top:8px;left:-12px;z-index:999;}
-.content-reply-box li.even .arrow{width:0;height:0;line-height:0;font-size:0;border-color:transparent transparent transparent #fff;border-width:6px;border-style:dashed dashed dashed solid;display:block;position:absolute;top:8px;right:-12px;z-index:999;}
+.content-reply-box li.odd .arrow{width:0;height:0;line-height:0;font-size:0;border-color:transparent white transparent transparent;border-width:6px;border-style:dashed solid dashed dashed;display:block;position:absolute;top:8px;left:-12px;z-index:999;}
+.content-reply-box li.even .arrow{width:0;height:0;line-height:0;font-size:0;border-color:transparent transparent transparent white;border-width:6px;border-style:dashed dashed dashed solid;display:block;position:absolute;top:8px;right:-12px;z-index:999;}
 .operating{border-top:1px solid #ccc;}
 .operating li{border-right:1px solid #ccc;}
 .operating a{padding:0.85em 0;display:inline-block;width:100%;}
@@ -37,3 +37,5 @@ li{list-style:none;}
 /*.linear-g{background: -moz-linear-gradient(top, #fdfdfd, #f6f6f6);background: -webkit-gradient(linear,top,from(#fdfdfd),to(#f6f6f6));background: -webkit-linear-gradient(top, #fdfdfd, #f6f6f6);background: -o-linear-gradient(top, #fdfdfd, #f6f6f6);box-shadow:0 0 5px #ccc;}*/
 .msg-box textarea{margin-top: 5px; height: 60px; width: 100%; resize: none; }
 .msg-box-btn button{margin-top: 7px;}
+#chat-box-left{float: left; width: 20%; margin: 10px}
+#chat-box-right{float: left; width: 70%; height: 500px; overflow: auto; background-color: ghostwhite; padding: 20px; margin-top: 10px}

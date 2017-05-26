@@ -77,7 +77,7 @@ class HandleMsgView(View):
         msg_list = []
         if request_user in Global_MQ:
             msg_nums = Global_MQ[request_user].qsize()
-            if msg_nums == 0:                               # 没有新消息则把队列阻塞，直到有新消息进入
+            if msg_nums == 0:                               # 没有新消息则把队列阻塞，直到有新消息进入（前端GetMsg()递归请求新消息）
                 try:
                     msg_list.append(Global_MQ[request_user].get(timeout=3))
                 except Exception:
