@@ -1,0 +1,328 @@
+<!DOCTYPE HTML>
+<html>
+{% load staticfiles %}
+<head>
+    <title>聊天室</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.mobile.flatui.css' %}"/>
+</head>
+<body>
+<div data-role="page">
+    <div data-role="header" class="header linear-g">
+        <a href="#panel-left" data-iconpos="notext" class="glyphicon glyphicon-th-large col-xs-2 text-right"> </a>
+        <a class="text-center col-xs-8" id="chat-title">developer.cn.com</a>
+        <a href="#panel-right" data-iconpos="notext" class="glyphicon glyphicon-user col-xs-2 text-left"> </a>
+    </div>
+    <div data-role="panel" data-position="left" data-display="push" class="list-group shortcut_menu dn linear-g"
+         id="panel-left">
+        <a href="#" class="list-group-item"><span class="glyphicon glyphicon-home"> </span> &nbsp;菜单1</a>
+        <a href="#" class="list-group-item"><span class="glyphicon glyphicon-edit"> </span> &nbsp;菜单2</a>
+        <a href="#" class="list-group-item"><span class="glyphicon glyphicon-list"> </span> &nbsp;菜单3</a>
+        <a href="#" class="list-group-item"><span class="glyphicon glyphicon-list-alt"> </span> &nbsp;菜单4</a>
+    </div>
+    <div data-role="panel" data-position="right" data-display="push" class="user_box text-center dn linear-g"
+         id="panel-right">
+        {% if request.user.is_authenticated %}
+            <div class="u_info">
+                <img class="avatar" src="{% static 'images/avatar.png' %}" alt="头像">
+                <span class="username">{{ request.user.username }}</span>
+            </div>
+            <ul class="user_menu">
+                <li class="menu">
+                    <a href="#"><span class="glyphicon glyphicon-cog"> </span> &nbsp;基本设置</a>
+                </li>
+                <li class="menu">
+                    <a href="#"><span class="glyphicon glyphicon-lock"> </span> &nbsp;修改密码</a>
+                </li>
+                <li class="menu">
+                    <a href="#"><span class="glyphicon glyphicon-picture"> </span> &nbsp;上传头像</a>
+                </li>
+                <li class="menu">
+                    <a href="{% url 'logout' %}"><span class="glyphicon glyphicon-off"> </span> &nbsp;安全退出</a>
+                </li>
+            </ul>
+        {% else %}
+            <div class="u_info">
+                <img class="avatar" src="{% static 'images/avatar.png' %}" alt="头像">
+                <span class="username">user</span>
+            </div>
+            <br>
+            <form action="{% url 'login' %}" method="post" autocomplete="off">
+                <ul class="user_menu">
+                    <li class="menu">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">用户名</label>
+                            <input name="username" class="form-control" id="exampleInputEmail1" placeholder="Email">
+                        </div>
+                    </li>
+                    <br>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">密码</label>
+                        <input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                    </div>
+                </ul>
+                <button type="submit" class="btn btn-default">登录</button>
+                {% csrf_token %}
+            </form>
+        {% endif %}
+    </div>
+
+    <div data-role="content" class="container" role="main" style="" id="chat-box">
+        <div>
+
+            <!-- Nav tabs -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a href="#contacts" role="tab" data-toggle="tab">联系人</a>
+                </li>
+                <li role="presentation">
+                    <a href="#groups" role="tab" data-toggle="tab">群组</a>
+                </li>
+                <li role="presentation">
+                    <a href="#notifications" role="tab" data-toggle="tab">通知</a>
+                </li>
+                <li role="presentation">
+                    <a href="#settings" role="tab" data-toggle="tab">配置</a>
+                </li>
+            </ul>
+
+            <!-- Tab panes -->
+            <div class="tab-content">
+
+                <div role="tabpanel" class="tab-pane active" id="contacts">
+                    <div id="chat-box-left" style="float: left; width: 20%; margin: 10px">
+                        <div class="list-group">
+                            <a href="#" class="list-group-item active">联系人</a>
+                        </div>
+                    </div>
+                    <div id="chat-box-right" style="float: left; width: 70%; height: 500px; overflow: auto;">
+                        {% if request.user.is_authenticated %}
+                            <ul class="content-reply-box mg10" id="chat-content">
+                                <li class="even">
+                                    <a class="user" href="#">
+                                        <img class="img-responsive avatar_" src="{% static 'images/avatar-1.png' %}"
+                                             alt="">
+                                        <span class="user-name">ywh</span>
+                                    </a>
+                                    <div class="reply-content-box">
+                                        <span class="reply-time">18:22:40</span>
+                                        <div class="reply-content pr">
+                                            <span class="arrow">&nbsp;</span>&nbsp;&nbsp;
+                                            听讲赚菜搵到嘢做？
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+
+                            <div class="chat-msg-sendbox">
+                                <div class="msg-box col-md-10">
+                                    <textarea id="message"></textarea>
+                                </div>
+                                <div class="msg-box-btn col-md-2">
+                                    <button type="button" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-comment"></span>&nbsp;发送
+                                    </button>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                </div>
+                <div role="tabpanel" class="tab-pane" id="groups">群组</div>
+                <div role="tabpanel" class="tab-pane" id="notifications">通知</div>
+                <div role="tabpanel" class="tab-pane" id="settings">配置</div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% csrf_token %}
+
+<script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery.mobile-1.4.0-rc.1.js' %}"></script>
+<script type="text/javascript">
+
+    //获取Cookies
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    // 获取CSRF Token
+    function csrfSafeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    $(function () {
+        $('.list-group-item,.menu a').click(function () {
+            $.mobile.changePage($(this).attr('href'), {
+                transition: 'flip',                                 //转场效果
+                reverse: true                                       //默认为false,设置为true时将导致一个反方向的转场
+            });
+        });
+    });
+
+    $(document).ready(function () {
+
+        LoadContacts();                                             // 加载联系人列表
+
+        GetMsg();
+
+        $("body").delegate("textarea", "keydown", function (e) {    // 发送消息
+            if (e.which == 13) {
+                var msg_text = $("textarea").val();
+                if ($.trim(msg_text).length > 0) {
+                    console.log(msg_text)
+                    SendMsg(msg_text);
+                }
+                AddSentMsg(msg_text);
+                $("textarea").val('');
+            }
+        });
+    });
+
+    // 在聊天框中添加发送消息
+    function AddSentMsg(msg_text) {
+        var d = new Date();
+        var send_time = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+        var msg_ele =
+            '<li class="odd">' +
+                '<a class="user" href="#">' +
+                    '<img class="img-responsive avatar_" src="{% static 'images/avatar-1.png' %}" alt="">' +
+                    '<span class="user-name">我</span>' +
+                '</a>' +
+                '<div class="reply-content-box">' +
+                    '<span class="reply-time">' + send_time + '</span>' +
+                    '<div class="reply-content pr">' +
+                        '<span class="arrow">&nbsp;</span>&nbsp;&nbsp;' +
+                        msg_text +
+                    '</div>' +
+                '</div>' +
+            '</li>';
+        $("#chat-content").append(msg_ele);
+
+        $('#chat-box').animate({            // 自动滑动到最新消息
+                scrollTop: $('#chat-box')[0].scrollHeight
+            }, 500
+        );
+    }
+
+    // 在聊天框中添加接收消息
+    function AddRecvMsg(msg_item) {
+        var msg_ele =
+            '<li class="even">' +
+                '<a class="user" href="#">' +
+                    '<img class="img-responsive avatar_" src="{% static 'images/avatar-1.png' %}" alt="">' +
+                    '<span class="user-name">' + msg_item.from_name + '</span>' +
+                '</a>' +
+                '<div class="reply-content-box">' +
+                    '<span class="reply-time">' + msg_item["timestamp"] + '</span>' +
+                    '<div class="reply-content pr">' +
+                        '<span class="arrow">&nbsp;</span>&nbsp;&nbsp;' +
+                        msg_item.msg +
+                    '</div>' +
+                '</div>' +
+            '</li>';
+        $("#chat-content").append(msg_ele);
+
+        $('#chat-box').animate({            // 自动滑动到最新消息
+                scrollTop: $('#chat-box')[0].scrollHeight
+            }, 500
+        );
+    }
+
+    // 发送消息到后台
+    function SendMsg(msg_text) {
+        var contact_id = $("#chat-title span").attr("contact_id");
+        var contact_type = $("#chat-title span").attr("contact_type");
+        var msg_dic = {
+            'contact_type': contact_type,
+            'to': contact_id,
+            'from': '{{ request.user.userprofile.id }}',
+            'from_name': '{{ request.user.userprofile.name }}',
+            'msg': msg_text,
+        };
+        $.post(
+            "{% url 'handle_msg' %}",
+            {"data": JSON.stringify(msg_dic)},
+            function (callback) {
+                console.log(callback);
+            }
+        );
+    }
+
+    // 从后台获取消息
+    function GetMsg(){
+        $.get(
+            "{% url 'handle_msg' %}",
+            function(callback){
+                console.log("new msg: "+ callback);
+                var msg_list = JSON.parse(callback);
+                var current_open_session_id = $("#chat-title span").attr("contact_id");
+                var current_open_session_type = $("#chat-title span").attr("contact_type");
+                // 获取新消息
+                $.each(msg_list, function(index, msg_item){
+                    if(msg_item.contact_type == current_open_session_type){
+                        if(msg_item.from == current_open_session_id){
+                            AddRecvMsg(msg_item);
+                        }
+                    }
+                })
+                GetMsg();
+            }
+        );
+    }
+
+
+    // 加载联系人列表
+    function LoadContacts() {
+        $.get("{% url 'contacts' %}", function (callback) {
+            //console.log(callback);
+            var data = JSON.parse(callback);
+            $.each(data.contact_list, function (index, element) {
+                var ele = '<a href="#" ' +
+                    'onclick=OpenDialogBox(this) ' +
+                    'class="list-group-item" contact_id="' + element.id + '"contact_type="single_contact"' + 'contact_name="' + element.name + '">' + element.name + '</a>';
+                $("#chat-box-left .list-group").append(ele);
+            });
+        });
+    }
+
+    // 开启聊天窗口
+    function OpenDialogBox(ele) {
+        var contact_id = $(ele).attr('contact_id');
+        var contact_type = $(ele).attr('contact_type');
+        var contact_name = $(ele).attr('contact_name');
+        var ele = '<h4>' +
+            '<span' + ' contact_id="' + contact_id + '"' + ' contact_type="' + contact_type + '"' + '">' +
+            contact_name +
+            '</span></h4>';
+        $("#chat-title").html(ele);
+    }
+
+</script>
+</body>
+</html>
