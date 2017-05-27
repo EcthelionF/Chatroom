@@ -11,381 +11,345 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.mobile.flatui.css' %}"/>
 </head>
 <body>
-<div data-role="page">
-    <div data-role="header" class="header linear-g">
-        <a href="#panel-left" data-iconpos="notext" class="glyphicon glyphicon-th-large col-xs-2 text-right"></a>
-        <a class="text-center col-xs-8" id="chat-title">Chatroom</a>
-        <a href="#panel-right" data-iconpos="notext" class="glyphicon glyphicon-user col-xs-2 text-left"></a>
-    </div>
-    {#    <div data-role="panel" data-position="left" data-display="push" class="list-group shortcut_menu dn linear-g"#}
-    {#         id="panel-left">#}
-    {#        <a href="#" class="list-group-item"><span class="glyphicon glyphicon-home"> </span> &nbsp;菜单1</a>#}
-    {#    </div>#}
-    <div data-role="panel" data-position="right" data-display="push" class="user_box text-center dn linear-g"
-         id="panel-right" style="background-color: white">
-        {% if request.user.is_authenticated %}
-            <div class="u_info">
-                <img class="avatar" src="{% static 'images/avatar.png' %}" alt="头像">
-                <span class="username">{{ request.user.username }}</span>
-            </div>
-            <ul class="user_menu">
-                <li class="menu">
-                    <a href="#"><span class="glyphicon glyphicon-cog"> </span> &nbsp;基本设置</a>
-                </li>
-                <li class="menu">
-                    <a href="#"><span class="glyphicon glyphicon-lock"> </span> &nbsp;修改密码</a>
-                </li>
-                <li class="menu">
-                    <a href="#"><span class="glyphicon glyphicon-picture"> </span> &nbsp;上传头像</a>
-                </li>
-                <li class="menu">
-                    <a href="{% url 'logout' %}"><span class="glyphicon glyphicon-off"> </span> &nbsp;安全退出</a>
-                </li>
-            </ul>
-        {% else %}
-            <div class="u_info">
-                <img class="avatar" src="{% static 'images/avatar.png' %}" alt="头像">
-                <span class="username">user</span>
-            </div>
-            <br>
-            <form action="{% url 'login' %}" method="post" autocomplete="off">
+    <div data-role="page">
+        <div data-role="header" class="header linear-g">
+            <a href="#panel-left" data-iconpos="notext" class="glyphicon glyphicon-th-large col-xs-2 text-right"></a>
+            <a class="text-center col-xs-8" id="chat-title"><h4><span>Chatroom</span></h4></a>
+            <a href="#panel-right" data-iconpos="notext" class="glyphicon glyphicon-user col-xs-2 text-left"></a>
+        </div>
+        <div data-role="panel" data-position="left" data-display="push" class="list-group shortcut_menu dn linear-g"
+             id="panel-left">
+            <a href="#" class="list-group-item"><span class="glyphicon glyphicon-home"> </span> &nbsp;菜单1</a>
+        </div>
+        <div data-role="panel" data-position="right" data-display="push" class="user_box text-center dn linear-g"
+             id="panel-right" style="background-color: white">
+            {% if request.user.is_authenticated %}
+                <div class="u_info">
+                    <img class="avatar" src="{% static 'images/avatar.png' %}" alt="头像">
+                    <span class="username">{{ request.user.username }}</span>
+                </div>
                 <ul class="user_menu">
-                    <li class="menu">
-                        <div class="form-group">
-                            <label for="exampleInputEmail1">用户名</label>
-                            <input name="username" class="form-control" id="exampleInputEmail1" placeholder="Email">
-                        </div>
-                    </li>
-                    <br>
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">密码</label>
-                        <input type="password" name="password" class="form-control" id="exampleInputPassword1"
-                               placeholder="Password">
-                    </div>
+                    <li class="menu"><a href="#"><span class="glyphicon glyphicon-cog"> </span> &nbsp;基本设置</a></li>
+                    <li class="menu"><a href="#"><span class="glyphicon glyphicon-lock"> </span> &nbsp;修改密码</a></li>
+                    <li class="menu"><a href="#"><span class="glyphicon glyphicon-picture"> </span> &nbsp;上传头像</a></li>
+                    <li class="menu"><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-off"> </span> &nbsp;安全退出</a></li>
                 </ul>
-                <button type="submit" class="btn btn-default">登录</button>
-                {% csrf_token %}
-            </form>
+            {% else %}
+                <div class="u_info">
+                    <img class="avatar" src="{% static 'images/avatar.png' %}" alt="头像">
+                    <span class="username">user</span>
+                </div>
+                <br>
+                <form action="{% url 'login' %}" method="post" autocomplete="off">
+                    <ul class="user_menu">
+                        <li class="menu">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">用户名</label>
+                                <input name="username" class="form-control" id="exampleInputEmail1" placeholder="Email">
+                            </div>
+                        </li>
+                        <br>
+                        <div class="form-group">
+                            <label for="exampleInputPassword1">密码</label>
+                            <input type="password" name="password" class="form-control" id="exampleInputPassword1"
+                                   placeholder="Password">
+                        </div>
+                    </ul>
+                    <button type="submit" class="btn btn-default">登录</button>
+                    {% csrf_token %}
+                </form>
+            {% endif %}
+        </div>
+        {% if request.user.is_authenticated %}
+            <div data-role="content" class="container" role="main" style="" id="chat-box">
+                <div>
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#contacts" role="tab" data-toggle="tab">联系人</a></li>
+                        <li role="presentation"><a href="#groups" role="tab" data-toggle="tab">群组</a></li>
+                        <li role="presentation"><a href="#notifications" role="tab" data-toggle="tab">通知</a></li>
+                        <li role="presentation"><a href="#settings" role="tab" data-toggle="tab">配置</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="contacts">
+                            <div id="chat-box-left">
+                                <div class="list-group"></div>
+                            </div>
+                            <div class="panel panel-default" id="chat-box-right">
+                                <ul class="content-reply-box mg10" id="chat-content"></ul>
+                            </div>
+                            <div style="float: left; width: 20%; margin: 10px"></div>
+                            <div class="chat-msg-sendbox" style="float: left; width: 70%;">
+                                <div class="msg-box col-md-10">
+                                    <textarea id="message"></textarea>
+                                </div>
+                                <div class="msg-box-btn col-md-2">
+                                    <button type="button" class="btn btn-default">
+                                        <span class="glyphicon glyphicon-comment"></span>&nbsp;发送
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="groups">群组</div>
+                        <div role="tabpanel" class="tab-pane" id="notifications">通知</div>
+                        <div role="tabpanel" class="tab-pane" id="settings">配置</div>
+                    </div>
+                </div>
+            </div>
         {% endif %}
     </div>
-    {% if request.user.is_authenticated %}
-        <div data-role="content" class="container" role="main" style="" id="chat-box">
-            <div>
-                <ul class="nav nav-tabs" role="tablist">
-                    <li role="presentation" class="active">
-                        <a href="#contacts" role="tab" data-toggle="tab">联系人</a>
-                    </li>
-                    <li role="presentation">
-                        <a href="#groups" role="tab" data-toggle="tab">群组</a>
-                    </li>
-                    <li role="presentation">
-                        <a href="#notifications" role="tab" data-toggle="tab">通知</a>
-                    </li>
-                    <li role="presentation">
-                        <a href="#settings" role="tab" data-toggle="tab">配置</a>
-                    </li>
-                </ul>
-                <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="contacts">
-                        <div id="chat-box-left">
-                            <div class="list-group">
-                                <a href="#" class="list-group-item active">联系人</a>
-                            </div>
-                        </div>
-                        <div class="panel panel-default" id="chat-box-right">
-                            <ul class="content-reply-box mg10" id="chat-content">
-                                <li class="even">
-                                    <a class="user" href="#">
-                                        <img class="img-responsive avatar_" src="{% static 'images/avatar-1.png' %}"
-                                             alt="">
-                                        <span class="user-name">ywh</span>
-                                    </a>
-                                    <div class="reply-content-box">
-                                        <span class="reply-time">18:22:40</span>
-                                        <div class="reply-content pr">
-                                            <span class="arrow">&nbsp;</span>&nbsp;&nbsp;
-                                            听讲赚菜搵到嘢做？
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div style="float: left; width: 20%; margin: 10px"></div>
-                        <div class="chat-msg-sendbox" style="float: left; width: 70%;">
-                            <div class="msg-box col-md-10">
-                                <textarea id="message"></textarea>
-                            </div>
-                            <div class="msg-box-btn col-md-2">
-                                <button type="button" class="btn btn-default">
-                                    <span class="glyphicon glyphicon-comment"></span>&nbsp;发送
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div role="tabpanel" class="tab-pane" id="groups">群组</div>
-                    <div role="tabpanel" class="tab-pane" id="notifications">通知</div>
-                    <div role="tabpanel" class="tab-pane" id="settings">配置</div>
-                </div>
 
-            </div>
-        </div>
-    {% endif %}
-</div>
-{% csrf_token %}
+    {% csrf_token %}
 
-<script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/jquery.mobile-1.4.0-rc.1.js' %}"></script>
-<script type="text/javascript">
+    <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery.mobile-1.4.0-rc.1.js' %}"></script>
+    <script type="text/javascript">
 
-    Global_Session_Cache = {
-        "single_contact": {},
-        "group_contact": {},
-    }
-
-    //获取Cookies
-    function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    var csrftoken = getCookie('csrftoken');
-
-    // 获取CSRF Token
-    function csrfSafeMethod(method) {
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-    $.ajaxSetup({
-        beforeSend: function (xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        }
-    });
-
-    $(function () {
-        $('.list-group-item,.menu a').click(function () {
-            $.mobile.changePage($(this).attr('href'), {
-                transition: 'flip',         //转场效果
-                reverse: true               //默认为false,设置为true时将导致一个反方向的转场
-            });
-        });
-    });
-
-    $(document).ready(function () {
-
-        LoadContacts();     // 加载联系人列表
-        GetMsg();           // 获取新消息
-
-        $("body").delegate("textarea", "keydown", function (e) {    // 发送消息
-            if (e.which == 13) {
-                var msg_text = $("textarea").val();
-                if ($.trim(msg_text).length > 0) {
-                    console.log(msg_text)
-                    SendMsg(msg_text);
-                }
-                AddSentMsg(msg_text);
-                $("textarea").val('');
-            }
-        });
-    });
-
-    // 生成新消息元素
-    function GenerateNewMsgItem(msg_item) {
-        var msg_ele =
-            '<li class="even">' +
-            '<a class="user" href="#">' +
-            '<img class="img-responsive avatar_" src="{% static 'images/avatar-1.png' %}" alt="">' +
-            '<span class="user-name">' + msg_item.from_name + '</span>' +
-            '</a>' +
-            '<div class="reply-content-box">' +
-            '<span class="reply-time">' + msg_item["timestamp"] + '</span>' +
-            '<div class="reply-content pr">' +
-            '<span class="arrow">&nbsp;</span>&nbsp;&nbsp;' +
-            msg_item.msg +
-            '</div>' +
-            '</div>' +
-            '</li>';
-        return msg_ele;
-    }
-
-    // 在聊天框中添加发送消息
-    function AddSentMsg(msg_text) {
-        var d = new Date();
-        var send_time = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
-        var msg_ele =
-            '<li class="odd">' +
-            '<a class="user" href="#">' +
-            '<img class="img-responsive avatar_" src="{% static 'images/avatar-1.png' %}" alt="">' +
-            '<span class="user-name">我</span>' +
-            '</a>' +
-            '<div class="reply-content-box">' +
-            '<span class="reply-time">' + send_time + '</span>' +
-            '<div class="reply-content pr">' +
-            '<span class="arrow">&nbsp;</span>&nbsp;&nbsp;' +
-            msg_text +
-            '</div>' +
-            '</div>' +
-            '</li>';
-        $("#chat-content").append(msg_ele);
-
-        $('#chat-box-right').animate({            // 自动滑动到最新消息
-                scrollTop: $('#chat-box-right')[0].scrollHeight
-            }, 500
-        );
-    }
-
-    // 在聊天框中添加接收消息
-    function AddRecvMsg(msg_item) {
-        var msg_ele =
-            '<li class="even">' +
-            '<a class="user" href="#">' +
-            '<img class="img-responsive avatar_" src="{% static 'images/avatar-1.png' %}" alt="">' +
-            '<span class="user-name">' + msg_item.from_name + '</span>' +
-            '</a>' +
-            '<div class="reply-content-box">' +
-            '<span class="reply-time">' + msg_item["timestamp"] + '</span>' +
-            '<div class="reply-content pr">' +
-            '<span class="arrow">&nbsp;</span>&nbsp;&nbsp;' +
-            msg_item.msg +
-            '</div>' +
-            '</div>' +
-            '</li>';
-        $("#chat-content").append(msg_ele);
-
-        $('#chat-box-right').animate({            // 自动滑动到最新消息
-                scrollTop: $('#chat-box-right')[0].scrollHeight
-            }, 500
-        );
-    }
-
-    // 发送消息到后台
-    function SendMsg(msg_text) {
-        var contact_id = $("#chat-title span").attr("contact_id");
-        var contact_type = $("#chat-title span").attr("contact_type");
-        var msg_dic = {
-            'contact_type': contact_type,
-            'to': contact_id,
-            'from': '{{ request.user.userprofile.id }}',
-            'from_name': '{{ request.user.userprofile.name }}',
-            'msg': msg_text
+        // 缓存会话信息
+        Global_Session_Cache = {
+            "single_contact": {},
+            "group_contact": {}
         };
-        $.post(
-            "{% url 'handle_msg' %}",
-            {"data": JSON.stringify(msg_dic)},
-            function (callback) {
-                console.log(callback);
-            }
-        );
-    }
 
-    // 从后台获取消息
-    function GetMsg() {
-        $.get(
-            "{% url 'handle_msg' %}",
-            function (callback) {
-                console.log("new msg: " + callback);
-                var msg_list = JSON.parse(callback);
-                var open_session_id = $("#chat-title span").attr("contact_id");
-                var open_session_type = $("#chat-title span").attr("contact_type");
-                $.each(msg_list, function (index, msg_item) {   // 获取新消息
-                    if (msg_item.contact_type == open_session_type) {
-                        if (msg_item.from == open_session_id) {
-                            AddRecvMsg(msg_item);
-                        }
-                        else {      // 未打开的会话
-                            var old_session_content = LoadSession(msg_item.from, msg_item.contact_type);
-                            var new_msg_ele = GenerateNewMsgItem(msg_item);
-                            var new_session_content = old_session_content + new_msg_ele;
-                            DumpSession2(msg_item.from, msg_item.contact_type, new_session_content);
-                            UpdateUnreadMsgNum(msg_item.from, msg_item.contact_type);
-                        }
+        //获取Cookies
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
                     }
-                });
-                GetMsg();
+                }
             }
-        );
-    }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
 
-    // 加载联系人列表
-    function LoadContacts() {
-        $.get("{% url 'contacts' %}", function (callback) {
-            var data = JSON.parse(callback);
-            $.each(data.contact_list, function (index, element) {
-                var ele = '<a href="#" ' +
-                    'onclick=OpenDialogBox(this) ' +                        // 点击联系人进入聊天窗口
-                    'class="list-group-item" contact_id="' + element.id +
-                    '"contact_type="single_contact"' +
-                    'contact_name="' + element.name + '">' +
-                    element.name +
-                    '<span class="badge">' + '0' +
-                    '</span></a>';
-                $("#chat-box-left .list-group").append(ele);
+        // 获取CSRF Token
+        function csrfSafeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+        $(function () {
+            $('.list-group-item,.menu a').click(function () {
+                $.mobile.changePage($(this).attr('href'), {
+                    transition: 'flip',         //转场效果
+                    reverse: true               //默认为false,设置为true时将导致一个反方向的转场
+                });
             });
         });
-    }
 
-    // 开启聊天窗口
-    function OpenDialogBox(ele) {
-        var contact_id = $(ele).attr('contact_id');
-        var contact_type = $(ele).attr('contact_type');
-        var contact_name = $(ele).attr('contact_name');
+        // 启动时自动运行
+        $(document).ready(function () {
+            LoadContacts();                     // 加载联系人列表
+            GetMsg();                           // 获取新消息
+            $("body").delegate("textarea", "keydown", function (e) {    // 发送消息
+                if (e.which == 13) {
+                    var msg_text = $("textarea").val();
+                    if ($.trim(msg_text).length > 0) {
+                        SendMsg(msg_text);
+                    }
+                    AddSentMsg(msg_text);
+                    $("textarea").val('');
+                }
+            });
+        });
 
-        DumpSession();                                                      // 保存会话内容
-
-        var title = '<h4><span' +
-            ' contact_id="' + contact_id + '"' +
-            ' contact_type="' + contact_type + '"'
-            + '">' +
-            contact_name +
-            '</span></h4>';
-        $("#chat-title").html(title);
-        $("#chat-content").html(LoadSession(contact_id, contact_type));     // 从本地缓存加载会话内容
-
-        var unread_msg_ele = $(ele).find("span")[0];                        // 清理未读消息数字
-        $(unread_msg_ele).text(0);
-        $(unread_msg_ele).css("display", "none");
-
-    }
-
-    // 保存当前聊天窗口会话内容到全局变量
-    function DumpSession() {
-        var contact_id = $("#chat-title span").attr("contact_id");
-        var contact_type = $("#chat-title span").attr("contact_type");
-        if (contact_id) {
-            Global_Session_Cache[contact_type][contact_id] = $("#chat-content").html();
+        // 生成新消息元素
+        function GenerateNewMsgItem(msg_item) {
+            var msg_ele =
+                '<li class="even">' +
+                '<a class="user" href="#">' +
+                '<img class="img-responsive avatar_" src="{% static 'images/avatar-1.png' %}" alt="">' +
+                '<span class="user-name">' + msg_item.from_name + '</span>' +
+                '</a>' +
+                '<div class="reply-content-box">' +
+                '<span class="reply-time">' + msg_item["timestamp"] + '</span>' +
+                '<div class="reply-content pr">' +
+                '<span class="arrow">&nbsp;</span>&nbsp;&nbsp;' +
+                msg_item.msg +
+                '</div>' +
+                '</div>' +
+                '</li>';
+            return msg_ele;
         }
-    }
 
-    function DumpSession2(contact_id, contact_type, content){
-        if (contact_id) {
-            Global_Session_Cache[contact_type][contact_id] = content;
+        // 在聊天框中添加发送消息
+        function AddSentMsg(msg_text) {
+            var d = new Date();
+            var send_time = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+            var msg_ele =
+                '<li class="odd">' +
+                '<a class="user" href="#">' +
+                '<img class="img-responsive avatar_" src="{% static 'images/avatar-1.png' %}" alt="">' +
+                '<span class="user-name">我</span>' +
+                '</a>' +
+                '<div class="reply-content-box">' +
+                '<span class="reply-time">' + send_time + '</span>' +
+                '<div class="reply-content pr">' +
+                '<span class="arrow">&nbsp;</span>&nbsp;&nbsp;' +
+                msg_text +
+                '</div>' +
+                '</div>' +
+                '</li>';
+            $("#chat-content").append(msg_ele);
+            $('#chat-box-right').animate({            // 自动滑动到最新消息
+                    scrollTop: $('#chat-box-right')[0].scrollHeight
+                }, 500
+            );
         }
-    }
 
-    // 从全局变量加载会话内容
-    function LoadSession(contact_id, contact_type) {
-        var session_html = "";
-        if (Global_Session_Cache[contact_type].hasOwnProperty(contact_id)) {
-            session_html = Global_Session_Cache[contact_type][contact_id];
+        // 在聊天框中添加接收消息
+        function AddRecvMsg(msg_item) {
+            var msg_ele =
+                '<li class="even">' +
+                '<a class="user" href="#">' +
+                '<img class="img-responsive avatar_" src="{% static 'images/avatar-1.png' %}" alt="">' +
+                '<span class="user-name">' + msg_item.from_name + '</span>' +
+                '</a>' +
+                '<div class="reply-content-box">' +
+                '<span class="reply-time">' + msg_item["timestamp"] + '</span>' +
+                '<div class="reply-content pr">' +
+                '<span class="arrow">&nbsp;</span>&nbsp;&nbsp;' +
+                msg_item.msg +
+                '</div>' +
+                '</div>' +
+                '</li>';
+            $("#chat-content").append(msg_ele);
+            $('#chat-box-right').animate({            // 自动滑动到最新消息
+                    scrollTop: $('#chat-box-right')[0].scrollHeight
+                }, 500
+            );
         }
-        return session_html;
-    }
 
-    // 计算未读消息数目
-    function UpdateUnreadMsgNum(contact_id, contact_type){
-        var msg_num = $("#chat-box-left .list-group a[contact_id='" + contact_id + "']").find("span")[0];
-        $(msg_num).text(parseInt($(msg_num).text())+1);
-        $(msg_num).show();
-    }
-</script>
+        // 发送消息到后台
+        function SendMsg(msg_text) {
+            var contact_id = $("#chat-title span").attr("contact_id");
+            var contact_type = $("#chat-title span").attr("contact_type");
+            var msg_dic = {
+                'contact_type': contact_type,
+                'send_to': contact_id,
+                'from': '{{ request.user.userprofile.id }}',
+                'from_name': '{{ request.user.userprofile.name }}',
+                'msg': msg_text
+            };
+            $.post(
+                "{% url 'handle_msg' %}",
+                {"data": JSON.stringify(msg_dic)},
+                function (callback) {
+                    console.log(callback);
+                }
+            );
+        }
+
+        // 从后台获取消息
+        function GetMsg() {
+            $.get(
+                "{% url 'handle_msg' %}",
+                function (callback) {
+                    var msg_list = JSON.parse(callback);
+                    var open_session_id = $("#chat-title span").attr("contact_id");
+                    var open_session_type = $("#chat-title span").attr("contact_type");
+                    $.each(msg_list, function (index, msg_item) {               // 获取新消息
+                        if (msg_item.contact_type == open_session_type) {
+                            if (msg_item.from == open_session_id) {
+                                AddRecvMsg(msg_item);
+                            }
+                            else {      // 未打开的会话
+                                var old_session_content = LoadSession(msg_item.from, msg_item.contact_type);
+                                var new_msg_ele = GenerateNewMsgItem(msg_item);
+                                var new_session_content = old_session_content + new_msg_ele;
+                                DumpSession2(msg_item.from, msg_item.contact_type, new_session_content);
+                                UpdateUnreadMsgNum(msg_item.from, msg_item.contact_type);
+                            }
+                        }
+                    });
+                    GetMsg();
+                }
+            );
+        }
+
+        // 加载联系人列表
+        function LoadContacts() {
+            $.get("{% url 'contacts' %}", function (callback) {
+                var data = JSON.parse(callback);
+                $.each(data.contact_list, function (index, element) {
+                    var ele = '<a href="#" ' +
+                        'onclick=OpenDialogBox(this) ' +                        // 点击联系人进入聊天窗口
+                        'class="list-group-item" contact_id="' + element.id +
+                        '"contact_type="single_contact"' +
+                        'contact_name="' + element.name + '">' +
+                        element.name +
+                        '<span class="badge">' + '0' +
+                        '</span></a>';
+                    $("#chat-box-left .list-group").append(ele);
+                });
+            });
+        }
+
+        // 开启聊天窗口
+        function OpenDialogBox(ele) {
+            $(ele).addClass("active");
+            $(ele).siblings().removeClass("active");
+            var contact_id = $(ele).attr('contact_id');
+            var contact_type = $(ele).attr('contact_type');
+            var contact_name = $(ele).attr('contact_name');
+            DumpSession();                                                      // 保存会话内容
+            var title = '<h4><span' +
+                ' contact_id="' + contact_id + '"' +
+                ' contact_type="' + contact_type + '"'
+                + '">' +
+                contact_name +
+                '</span></h4>';
+            $("#chat-title").html(title);
+            $("#chat-content").html(LoadSession(contact_id, contact_type));     // 从本地缓存加载会话内容
+            var unread_msg_ele = $(ele).find("span")[0];                        // 清理未读消息数字
+            $(unread_msg_ele).text(0);
+            $(unread_msg_ele).css("display", "none");
+            $('#chat-box-right').animate({            // 自动滑动到最新消息
+                    scrollTop: $('#chat-box-right')[0].scrollHeight
+                }, 500
+            );
+        }
+
+        // 保存当前聊天窗口会话内容到全局变量
+        function DumpSession() {
+            var contact_id = $("#chat-title span").attr("contact_id");
+            var contact_type = $("#chat-title span").attr("contact_type");
+            if (contact_id) {
+                Global_Session_Cache[contact_type][contact_id] = $("#chat-content").html();
+            }
+        }
+        function DumpSession2(contact_id, contact_type, content) {
+            if (contact_id) {
+                Global_Session_Cache[contact_type][contact_id] = content;
+            }
+        }
+
+        // 从全局变量加载会话内容
+        function LoadSession(contact_id, contact_type) {
+            var session_html = "";
+            if (Global_Session_Cache[contact_type].hasOwnProperty(contact_id)) {
+                session_html = Global_Session_Cache[contact_type][contact_id];
+            }
+            return session_html;
+        }
+
+        // 计算未读消息数目
+        function UpdateUnreadMsgNum(contact_id, contact_type) {
+            var msg_num = $("#chat-box-left .list-group a[contact_id='" + contact_id + "']").find("span")[0];
+            $(msg_num).text(parseInt($(msg_num).text()) + 1);
+            $(msg_num).show();
+        }
+    </script>
 </body>
 </html>
