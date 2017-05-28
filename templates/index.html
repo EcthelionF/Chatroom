@@ -25,7 +25,7 @@
              id="panel-right" style="background-color: white">
             {% if request.user.is_authenticated %}
                 <div class="u_info">
-                    <img class="avatar" src="{% static 'images/avatar.png' %}" alt="头像">
+                    <img class="avatar" src="{{ MEDIA_URL }}{{ request.user.image }}" alt="头像">
                     <span class="username">{{ request.user.username }}</span>
                 </div>
                 <ul class="user_menu">
@@ -36,7 +36,7 @@
                 </ul>
             {% else %}
                 <div class="u_info">
-                    <img class="avatar" src="{% static 'images/avatar.png' %}" alt="头像">
+                    <img class="avatar" src="{% static 'images/avatar-1.png' %}" alt="头像">
                     <span class="username">user</span>
                 </div>
                 <br>
@@ -64,10 +64,12 @@
             <div data-role="content" class="container" role="main" style="" id="chat-box">
                 <div>
                     <ul class="nav nav-tabs" role="tablist">
-                        <li role="presentation" class="active"><a href="#contacts" role="tab" data-toggle="tab">联系人</a></li>
-                        <li role="presentation"><a href="#groups" role="tab" data-toggle="tab">群组</a></li>
+{#                        <li role="presentation" class="active"><a href="#contacts" role="tab" data-toggle="tab">联系人</a></li>#}
+{#                        <li role="presentation"><a href="#contacts" role="tab" data-toggle="tab">群组</a></li>#}
+                        <li role="presentation" class="active" chat-type="contact_list" contact-type="single_contact"><a onclick="ChangeTab();" href="#contacts" role="tab" data-toggle="tab">联系人</a></li>
+                        <li role="presentation" chat-type="group_list" contact-type="group_contact"><a onclick="ChangeTab();" href="#contacts" role="tab" data-toggle="tab">群组</a></li>
                         <li role="presentation"><a href="#notifications" role="tab" data-toggle="tab">通知</a></li>
-                        <li role="presentation"><a href="#settings" role="tab" data-toggle="tab">配置</a></li>
+                        <li role="presentation"><a href="#settings" role="tab" data-toggle="tab">设置</a></li>
                     </ul>
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="contacts">
@@ -91,7 +93,7 @@
                         </div>
                         <div role="tabpanel" class="tab-pane" id="groups">群组</div>
                         <div role="tabpanel" class="tab-pane" id="notifications">通知</div>
-                        <div role="tabpanel" class="tab-pane" id="settings">配置</div>
+                        <div role="tabpanel" class="tab-pane" id="settings">设置</div>
                     </div>
                 </div>
             </div>
@@ -105,8 +107,8 @@
     <script type="text/javascript" src="{% static 'js/jquery.mobile-1.4.0-rc.1.js' %}"></script>
     <script type="text/javascript">
 
-        // 缓存会话信息
-        Global_Session_Cache = {
+        // 在浏览器中缓存会话信息
+        Session_Cache = {
             "single_contact": {},
             "group_contact": {}
         };
@@ -166,14 +168,16 @@
 
         // 生成新消息元素
         function GenerateNewMsgItem(msg_item) {
+            var date = new Date(msg_item["timestamp"]);
+            var time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
             var msg_ele =
                 '<li class="even">' +
                 '<a class="user" href="#">' +
-                '<img class="img-responsive avatar_" src="{% static 'images/avatar-1.png' %}" alt="">' +
+                '<img class="img-responsive avatar_" src="{{ MEDIA_URL }}image/'+ msg_item.from_name + '.jpg"' +' alt="">' +
                 '<span class="user-name">' + msg_item.from_name + '</span>' +
                 '</a>' +
                 '<div class="reply-content-box">' +
-                '<span class="reply-time">' + msg_item["timestamp"] + '</span>' +
+                '<span class="reply-time">' + time + '</span>' +
                 '<div class="reply-content pr">' +
                 '<span class="arrow">&nbsp;</span>&nbsp;&nbsp;' +
                 msg_item.msg +
@@ -190,7 +194,7 @@
             var msg_ele =
                 '<li class="odd">' +
                 '<a class="user" href="#">' +
-                '<img class="img-responsive avatar_" src="{% static 'images/avatar-1.png' %}" alt="">' +
+                '<img class="img-responsive avatar_" src="{{ MEDIA_URL }}{{ request.user.image }}" alt="">' +
                 '<span class="user-name">我</span>' +
                 '</a>' +
                 '<div class="reply-content-box">' +
@@ -210,14 +214,16 @@
 
         // 在聊天框中添加接收消息
         function AddRecvMsg(msg_item) {
+            var date = new Date(msg_item["timestamp"]);
+            var time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
             var msg_ele =
                 '<li class="even">' +
                 '<a class="user" href="#">' +
-                '<img class="img-responsive avatar_" src="{% static 'images/avatar-1.png' %}" alt="">' +
+                '<img class="img-responsive avatar_" src="{{ MEDIA_URL }}image/'+ msg_item.from_name + '.jpg"' +' alt="">' +
                 '<span class="user-name">' + msg_item.from_name + '</span>' +
                 '</a>' +
                 '<div class="reply-content-box">' +
-                '<span class="reply-time">' + msg_item["timestamp"] + '</span>' +
+                '<span class="reply-time">' + time + '</span>' +
                 '<div class="reply-content pr">' +
                 '<span class="arrow">&nbsp;</span>&nbsp;&nbsp;' +
                 msg_item.msg +
@@ -238,8 +244,8 @@
             var msg_dic = {
                 'contact_type': contact_type,
                 'send_to': contact_id,
-                'from': '{{ request.user.userprofile.id }}',
-                'from_name': '{{ request.user.userprofile.name }}',
+                'from': '{{ request.user.id }}',
+                'from_name': '{{ request.user.name }}',
                 'msg': msg_text
             };
             $.post(
@@ -260,39 +266,65 @@
                     var open_session_id = $("#chat-title span").attr("contact_id");
                     var open_session_type = $("#chat-title span").attr("contact_type");
                     $.each(msg_list, function (index, msg_item) {               // 获取新消息
-                        if (msg_item.contact_type == open_session_type) {
-                            if (msg_item.from == open_session_id) {
-                                AddRecvMsg(msg_item);
+                        if(msg_item.contact_type == "single_contact"){          // 当前窗口为私聊
+                            if (msg_item.contact_type == open_session_type) {
+
+                                if (msg_item.from == open_session_id) { // 与当前打开联系人的消息
+                                    AddRecvMsg(msg_item);
+                                }else {      // 未打开联系人的消息（存放在浏览器缓存中）
+                                    var old_session_content = LoadSession(msg_item.from, msg_item.contact_type);
+                                    var new_msg_ele = GenerateNewMsgItem(msg_item);
+                                    var new_session_content = old_session_content + new_msg_ele;
+                                    DumpSession2(msg_item.from, msg_item.contact_type, new_session_content);
+                                    UpdateUnreadMsgNum(msg_item.from, msg_item.contact_type);
+                                }
                             }
-                            else {      // 未打开的会话
-                                var old_session_content = LoadSession(msg_item.from, msg_item.contact_type);
-                                var new_msg_ele = GenerateNewMsgItem(msg_item);
-                                var new_session_content = old_session_content + new_msg_ele;
-                                DumpSession2(msg_item.from, msg_item.contact_type, new_session_content);
-                                UpdateUnreadMsgNum(msg_item.from, msg_item.contact_type);
+                        }else{   // 当前窗口为群聊
+                            if (msg_item.contact_type == open_session_type) {
+                                if(msg_item.send_to == open_session_id){
+                                    AddRecvMsg(msg_item);
+                                }else{      // 未打开群组的消息
+                                    var old_session_content = LoadSession(msg_item.send_to, msg_item.contact_type);
+                                    var new_msg_ele = GenerateNewMsgItem(msg_item);
+                                    var new_session_content = old_session_content + new_msg_ele;
+                                    DumpSession2(msg_item.send_to, msg_item.contact_type, new_session_content);
+                                    UpdateUnreadMsgNum(msg_item.send_to, msg_item.contact_type);
+                                }
                             }
-                        }
+                        };
                     });
                     GetMsg();
+                    // 在回调函数中通过递归再次发起请求：每次请求完成才开始调用
+                    // 不能使用while循环：本次请求未结束就马上发起新的请求，结果是永远在等待请求结果
+                    // 不能使用setInteral：启用多个线程向后端发起请求，结果是无法被阻塞，浪费大量资源
                 }
             );
         }
 
         // 加载联系人列表
+        // 联系人名称、id：后端数据库 -> 联系人列表 -> 聊天框title
         function LoadContacts() {
             $.get("{% url 'contacts' %}", function (callback) {
                 var data = JSON.parse(callback);
-                $.each(data.contact_list, function (index, element) {
+
+                var current_tab = $(".nav-tabs li").filter(".active")[0];
+                var chat_type = $(current_tab).attr("chat-type");
+                var contact_type = $(current_tab).attr("contact-type");
+
+                 $("#chat-box-left .list-group").empty();
+
+                $.each(data[chat_type], function(index, element){               // 根据当前聊天类型获取联系人列表或组列表
                     var ele = '<a href="#" ' +
                         'onclick=OpenDialogBox(this) ' +                        // 点击联系人进入聊天窗口
-                        'class="list-group-item" contact_id="' + element.id +
-                        '"contact_type="single_contact"' +
+                        'class="list-group-item" contact_id="' + element.id + '" ' +
+                        'contact_type="' + contact_type + '" ' +                // 在联系人标签中记录其type、id
                         'contact_name="' + element.name + '">' +
                         element.name +
                         '<span class="badge">' + '0' +
                         '</span></a>';
-                    $("#chat-box-left .list-group").append(ele);
+                        $("#chat-box-left .list-group").append(ele);
                 });
+                $($(".list-group a")[0]).click();
             });
         }
 
@@ -300,21 +332,27 @@
         function OpenDialogBox(ele) {
             $(ele).addClass("active");
             $(ele).siblings().removeClass("active");
-            var contact_id = $(ele).attr('contact_id');
+
+            DumpSession();                                      // 保存会话内容
+
+            var contact_id = $(ele).attr('contact_id');         // 从标签中获取该联系人信息、存放在title的属性中
             var contact_type = $(ele).attr('contact_type');
             var contact_name = $(ele).attr('contact_name');
-            DumpSession();                                                      // 保存会话内容
+
             var title = '<h4><span' +
                 ' contact_id="' + contact_id + '"' +
                 ' contact_type="' + contact_type + '"'
                 + '">' +
                 contact_name +
                 '</span></h4>';
+
             $("#chat-title").html(title);
             $("#chat-content").html(LoadSession(contact_id, contact_type));     // 从本地缓存加载会话内容
-            var unread_msg_ele = $(ele).find("span")[0];                        // 清理未读消息数字
+
+            var unread_msg_ele = $(ele).find("span")[0];                        // 清理未读消息数
             $(unread_msg_ele).text(0);
             $(unread_msg_ele).css("display", "none");
+
             $('#chat-box-right').animate({            // 自动滑动到最新消息
                     scrollTop: $('#chat-box-right')[0].scrollHeight
                 }, 500
@@ -326,20 +364,20 @@
             var contact_id = $("#chat-title span").attr("contact_id");
             var contact_type = $("#chat-title span").attr("contact_type");
             if (contact_id) {
-                Global_Session_Cache[contact_type][contact_id] = $("#chat-content").html();
+                Session_Cache[contact_type][contact_id] = $("#chat-content").html();
             }
         }
         function DumpSession2(contact_id, contact_type, content) {
             if (contact_id) {
-                Global_Session_Cache[contact_type][contact_id] = content;
+                Session_Cache[contact_type][contact_id] = content;
             }
         }
 
         // 从全局变量加载会话内容
         function LoadSession(contact_id, contact_type) {
             var session_html = "";
-            if (Global_Session_Cache[contact_type].hasOwnProperty(contact_id)) {
-                session_html = Global_Session_Cache[contact_type][contact_id];
+            if (Session_Cache[contact_type].hasOwnProperty(contact_id)){
+                session_html = Session_Cache[contact_type][contact_id];
             }
             return session_html;
         }
@@ -349,6 +387,11 @@
             var msg_num = $("#chat-box-left .list-group a[contact_id='" + contact_id + "']").find("span")[0];
             $(msg_num).text(parseInt($(msg_num).text()) + 1);
             $(msg_num).show();
+        }
+
+        //切换标签页
+        function ChangeTab(){
+            LoadContacts();
         }
     </script>
 </body>
