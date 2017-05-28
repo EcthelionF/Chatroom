@@ -6,4 +6,4 @@
 - 支持私聊及多人群聊。
 
 ## 运行效果
-![Chatroom](http://ooaovpott.bkt.clouddn.com/Chat.jpg)
+![Chatroom](http://ooaovpott.bkt.clouddn.com/Chat.png)
